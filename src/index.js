@@ -1,4 +1,8 @@
 import _ from 'lodash';
+// import * as helpermodule from './helper.js' 
+//add resolve is soltion for extension
+import * as helpermodule from './helper'
+import './sharedModule'
 
 function component() {
     var element = document.createElement('div');
@@ -10,4 +14,9 @@ function component() {
   }
   
   document.body.appendChild(component());
-  console.log("hello webpack")
+  console.log("hello webpasasasack", helpermodule.greetings)
+
+var arr=[ 1, 2, 3];
+_.each(arr,function(val) {
+  console.log('Output from Lodash _.each for Element ' + val); 
+});
