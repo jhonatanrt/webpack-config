@@ -1,37 +1,57 @@
 const path = require('path');
+const webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var package = require('./package.json');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
-    app: './src/index.js',
-    vendor: './src/helper.js',
-    settings: './src/settings.js'
+    app: './src/index.js'
   },
   output: {
-    filename: '[name].bundle.js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist')
   },
-  watch:true,
+  // watch:true,
   resolve: {
-      extensions: ['.js','.ts']
+      extensions: ['.js','.ts','.pug']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.pug$/,
+        use: 'pug-loader'
+      }
+    ]
+  },
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'),
+    compress: true,
+    open: true
   },
   plugins: [
       new HtmlWebpackPlugin({
           hash: true,
-          title: 'html generate wiht webpack',
-          myPageHeader: 'Hello world',
-          template: './src/index.html',
-          chunks: ['vendor','app'],
+          title: 'Application',
+          template: './src/index.pug',
           filename: './index.html'
       }),
-      new HtmlWebpackPlugin({
-        hash: true,
-        title: 'Other web page',
-        myPageHeader: 'Hello Settings',
-        template: './src/index.html',
-        chunks: ['vendor','settings'],
-        filename: './settings.html'
-    })
+      new CopyWebpackPlugin([
+        {
+         from: 'dist/index.html',
+         to: '../razor/_layout.cshtml'
+        },
+        {
+          from: 'node_modules/bootstrap/',
+          to: '../razor/lib/bootstrap/'
+        },
+        {
+          from: 'node_modules/jquery/',
+          to: '../razor/lib/jquery/'
+        },
+        {
+          from: 'node_modules/popper.js/',
+          to: '../razor/lib/popper.js/'
+        }
+      ])
   ]
 };
