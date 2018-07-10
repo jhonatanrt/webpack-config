@@ -12,6 +12,7 @@ function generateHtmlPlugins (templateDir, nameFile) {
     const extension = parts[1]
     return new HtmlWebpackPlugin({
       filename: `./Views/${nameFile}/${name}.cshtml`,
+      inject: false,
       template: path.resolve(__dirname, `${templateDir}/${nameFile}/${name}.${extension}`)
     })
   })
@@ -21,14 +22,7 @@ const htmlPluginsShared = generateHtmlPlugins('./src/views/','Shared/')
 const htmlPlugins = generateHtmlPlugins('./src/views/','Cips/')
 
 module.exports = {
-  entry: {
-    app: './src/index.js'
-  },
-  output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'razor')
-  },
-  // watch:true,
+  watch:true,
   resolve: {
       extensions: ['.js','.ts','.pug']
   },
@@ -53,15 +47,15 @@ module.exports = {
       new CopyWebpackPlugin([
         {
           from: 'node_modules/bootstrap/',
-          to: '../razor/lib/bootstrap/'
+          to: '../dist/lib/bootstrap/'
         },
         {
           from: 'node_modules/jquery/',
-          to: '../razor/lib/jquery/'
+          to: '../dist/lib/jquery/'
         },
         {
           from: 'node_modules/popper.js/',
-          to: '../razor/lib/popper.js/'
+          to: '../dist/lib/popper.js/'
         }
       ])
   ]
