@@ -1,7 +1,24 @@
 const path = require('path');
 const webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const fs = require('fs')
+
+function generateHtmlPlugins (templateDir, nameFile) {
+  const templateFiles = fs.readdirSync(path.resolve(__dirname, templateDir + nameFile))
+  return templateFiles.map(item => {
+    const parts = item.split('.')
+    const name = parts[0]
+    const extension = parts[1]
+    return new HtmlWebpackPlugin({
+      filename: `./Views/${nameFile}/${name}.cshtml`,
+      template: path.resolve(__dirname, `${templateDir}/${nameFile}/${name}.${extension}`)
+    })
+  })
+}
+
+const htmlPluginsShared = generateHtmlPlugins('./src/views/','Shared/')
+const htmlPlugins = generateHtmlPlugins('./src/views/','Cips/')
 
 module.exports = {
   entry: {
@@ -9,7 +26,7 @@ module.exports = {
   },
   output: {
     filename: 'index.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'razor')
   },
   // watch:true,
   resolve: {
@@ -19,7 +36,11 @@ module.exports = {
     rules: [
       {
         test: /\.pug$/,
-        use: 'pug-loader'
+        loader: 'pug-loader',
+        options: {
+          pretty: true,
+          name: '[name].[ext]'
+        }
       }
     ]
   },
@@ -29,17 +50,7 @@ module.exports = {
     open: true
   },
   plugins: [
-      new HtmlWebpackPlugin({
-          hash: true,
-          title: 'Application',
-          template: './src/index.pug',
-          filename: './index.html'
-      }),
       new CopyWebpackPlugin([
-        {
-         from: 'dist/index.html',
-         to: '../razor/_layout.cshtml'
-        },
         {
           from: 'node_modules/bootstrap/',
           to: '../razor/lib/bootstrap/'
@@ -54,4 +65,6 @@ module.exports = {
         }
       ])
   ]
+  .concat(htmlPluginsShared)
+  .concat(htmlPlugins)
 };
